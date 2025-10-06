@@ -6,20 +6,46 @@
   <title>Planificador de Producción</title>
   <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; }
-    df-messenger {
-      --df-messenger-font-color: #000;
-      --df-messenger-button-titlebar-color: #0d6efd;
-      --df-messenger-chat-background-color: #f1f1f1;
+    /* fondo y centrado */
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f7fb;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
+
+    /* ancho máximo de la tarjeta */
+    .chat-wrapper {
+      width: min(420px, 92vw);
+      height: min(70vh, 720px);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    /* colores del Messenger */
+    df-messenger {
+      --df-messenger-button-titlebar-color: #3b5bfd;   /* barra superior */
+      --df-messenger-font-color: #000;
+      --df-messenger-chat-background-color: #ffffff;
+      --df-messenger-chat-border-radius: 14px;
+      --df-messenger-message-user-background-color: #e9edff;
+      --df-messenger-message-bot-background-color: #f6f6f8;
+    }
+
+    /* quitar posición flotante por si algún estilo del host la aplica */
+    df-messenger { position: static !important; }
   </style>
 </head>
 <body>
-  <df-messenger
-    intent="WELCOME"
-    chat-title="Planificador"
-    agent-id="084865e4-8977-4a49-9d05-79e832009949"
-    language-code="es">
-  </df-messenger>
+  <div class="chat-wrapper">
+    <df-messenger agent-id="AGENT_ID_AQUI" language-code="es">
+      <!-- chat SIEMPRE abierto, estilo “tarjeta” -->
+      <df-messenger-chat chat-title="Planificador"></df-messenger-chat>
+    </df-messenger>
+  </div>
 </body>
 </html>
+
