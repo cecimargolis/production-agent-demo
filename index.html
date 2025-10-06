@@ -4,105 +4,106 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Planificador de Producción</title>
-
-  <!-- Bootstrap del widget de Dialogflow Messenger -->
   <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
-
   <style>
-    /* Paleta y base */
-    :root {
-      --brand: #3b5bfd;   /* color principal barra del chat */
-      --bg: #f5f7fb;      /* fondo de la página */
-    }
-    html, body { height: 100%; margin: 0; }
-    body {
-      background: var(--bg);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    }
+    :root { --brand:#3b5bfd; --bg:#f5f7fb; }
+    html, body { height:100%; margin:0; }
+    body { background:var(--bg); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
 
-    /* Cabecera simple */
-    .hero {
-      max-width: 920px;
-      margin: 56px auto 0;
-      padding: 0 20px;
-      text-align: center;
-    }
-    .hero h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-      color: #0f172a;
-      letter-spacing: .2px;
-    }
-    .hero p {
-      margin: 0;
-      color: #334155;
-    }
+    /* Encabezado */
+    .hero { max-width:920px; margin:56px auto 0; padding:0 20px; text-align:center; }
+    .hero h1 { margin:0 0 8px; font-size:28px; color:#0f172a; letter-spacing:.2px; }
+    .hero p { margin:0; color:#334155; }
 
-    /* Personalización del Messenger (desktop por defecto) */
+    /* Estilos COMUNES del messenger */
     df-messenger {
-      /* Colores */
       --df-messenger-button-titlebar-color: var(--brand);
       --df-messenger-font-color: #000;
-      --df-messenger-chat-background-color: #ffffff;
-      --df-messenger-chat-border-radius: 14px;
+      --df-messenger-chat-background-color:#fff;
+      --df-messenger-chat-border-radius:14px;
+      --df-messenger-message-user-background-color:#e9edff;
+      --df-messenger-message-bot-background-color:#f6f6f8;
+    }
 
-      /* Burbujas (opcional) */
-      --df-messenger-message-user-background-color: #e9edff;
-      --df-messenger-message-bot-background-color: #f6f6f8;
+    /* ====== TARJETA CENTRADA (opción A) ====== */
+    .card-wrap { display:none; height: calc(100% - 120px); /* se muestra solo si hay soporte */ }
+    .card { width:min(460px,92vw); height:min(78vh,760px); margin:20px auto 40px;
+            background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.2); padding:8px; }
+    .card df-messenger { position:static !important; width:100%; height:100%; display:block; }
+    .card df-messenger, .card df-messenger * { max-width:100%; }
 
-      /* Tamaño del panel flotante (desktop/tablet) */
+    /* ====== FLOTANTE (opción B) ====== */
+    .float-wrap { display:block; }
+    .float-wrap df-messenger {
       --df-messenger-chat-width: 420px;
       --df-messenger-chat-height: 70vh;
     }
 
-    /* Ajustes de móvil: ancho completo, alto cómodo para teclado */
-    @media (max-width: 600px) {
-      df-messenger {
-        --df-messenger-chat-width: 100vw;  /* ocupa todo el ancho */
-        --df-messenger-chat-height: 75vh;  /* un poco más bajo por teclado */
+    /* Móvil */
+    @media (max-width:600px){
+      .hero { margin-top:32px; }
+      .hero h1 { font-size:22px; }
+      .float-wrap df-messenger {
+        --df-messenger-chat-width: 100vw;
+        --df-messenger-chat-height: 75vh;
       }
-      .hero { margin-top: 32px; }
-      .hero h1 { font-size: 22px; }
     }
-
-    /* Tablet: un poquito más grande si querés */
-    @media (min-width: 600px) and (max-width: 960px) {
-      df-messenger {
+    /* Tablet */
+    @media (min-width:600px) and (max-width:960px){
+      .float-wrap df-messenger {
         --df-messenger-chat-width: 480px;
         --df-messenger-chat-height: 80vh;
       }
     }
-
-    /* Mejor soporte para safe areas (iOS) */
-    @supports(padding: max(0px)) {
-      body { padding-bottom: env(safe-area-inset-bottom); }
-    }
+    @supports(padding: max(0px)){ body{ padding-bottom: env(safe-area-inset-bottom); } }
   </style>
 </head>
 <body>
   <section class="hero">
     <h1>Planificador de Producción</h1>
-    <p>Abrí el chat abajo a la derecha y seguí los pasos para generar tu plan.</p>
+    <p>Abrí el chat y seguí los pasos para generar tu plan.</p>
   </section>
 
-  <!-- Widget flotante -->
-  <df-messenger
-    agent-id="084865e4-8977-4a49-9d05-79e832009949"
-    language-code="es"
-    chat-title="Planificador"
-    intent="WELCOME">
-  </df-messenger>
+  <!-- Opción A (tarjeta centrada). Oculta por defecto; el script la habilita si hay soporte -->
+  <div class="card-wrap" id="cardWrap">
+    <div class="card">
+      <df-messenger agent-id="084865e4-8977-4a49-9d05-79e832009949" language-code="es">
+        <df-messenger-chat chat-title="Planificador"></df-messenger-chat>
+      </df-messenger>
+    </div>
+  </div>
+
+  <!-- Opción B (flotante mejorado). Visible por defecto; el script la oculta si A está disponible -->
+  <div class="float-wrap" id="floatWrap">
+    <df-messenger
+      agent-id="084865e4-8977-4a49-9d05-79e832009949"
+      language-code="es"
+      chat-title="Planificador"
+      intent="WELCOME">
+    </df-messenger>
+  </div>
 
   <script>
-    // Intento abrir el chat automáticamente (algunas versiones lo soportan)
+    // Si el navegador/agente registra <df-messenger-chat>, usamos la tarjeta centrada (A).
+    // Si NO, dejamos el flotante (B).
     window.addEventListener('DOMContentLoaded', () => {
-      const df = document.querySelector('df-messenger');
-      if (df && typeof df.open === 'function') {
-        try { df.open(); } catch (e) {}
+      const supportsCard = !!customElements.get('df-messenger-chat');
+      const cardWrap = document.getElementById('cardWrap');
+      const floatWrap = document.getElementById('floatWrap');
+
+      if (supportsCard) {
+        // Mostrar tarjeta centrada, ocultar flotante
+        if (cardWrap) cardWrap.style.display = 'block';
+        if (floatWrap) floatWrap.style.display = 'none';
+      } else {
+        // Mantener flotante y, si se puede, abrirlo
+        const df = floatWrap?.querySelector('df-messenger');
+        if (df && typeof df.open === 'function') { try { df.open(); } catch(e){} }
       }
     });
   </script>
 </body>
 </html>
+
 
 
