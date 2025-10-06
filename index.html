@@ -3,107 +3,181 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Planificador de Producción</title>
+  <title>Planificador de Producción — Demo</title>
+
+  <!-- Dialogflow Messenger -->
   <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+
   <style>
-    :root { --brand:#3b5bfd; --bg:#f5f7fb; }
-    html, body { height:100%; margin:0; }
-    body { background:var(--bg); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
-
-    /* Encabezado */
-    .hero { max-width:920px; margin:56px auto 0; padding:0 20px; text-align:center; }
-    .hero h1 { margin:0 0 8px; font-size:28px; color:#0f172a; letter-spacing:.2px; }
-    .hero p { margin:0; color:#334155; }
-
-    /* Estilos COMUNES del messenger */
-    df-messenger {
-      --df-messenger-button-titlebar-color: var(--brand);
-      --df-messenger-font-color: #000;
-      --df-messenger-chat-background-color:#fff;
-      --df-messenger-chat-border-radius:14px;
-      --df-messenger-message-user-background-color:#e9edff;
-      --df-messenger-message-bot-background-color:#f6f6f8;
+    :root {
+      --brand: #3b5bfd;        /* color principal del chat */
+      --bg: #f6f7fb;           /* fondo de la página */
+      --card: #ffffff;         /* fondo de la tarjeta */
+      --text: #0f172a;         /* títulos */
+      --muted: #334155;        /* párrafos */
+      --shadow: 0 14px 40px rgba(16, 24, 40, .12);
+      --radius: 16px;
     }
 
-    /* ====== TARJETA CENTRADA (opción A) ====== */
-    .card-wrap { display:none; height: calc(100% - 120px); /* se muestra solo si hay soporte */ }
-    .card { width:min(460px,92vw); height:min(78vh,760px); margin:20px auto 40px;
-            background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.2); padding:8px; }
-    .card df-messenger { position:static !important; width:100%; height:100%; display:block; }
-    .card df-messenger, .card df-messenger * { max-width:100%; }
+    /* Layout base */
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: var(--bg);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 32px 16px 80px; /* extra bottom por safe area + botón del chat */
+      box-sizing: border-box;
+    }
 
-    /* ====== FLOTANTE (opción B) ====== */
-    .float-wrap { display:block; }
-    .float-wrap df-messenger {
+    /* Tarjeta central */
+    .card {
+      width: min(860px, 96vw);
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 4vw, 36px);
+    }
+    .title {
+      margin: 0 0 8px;
+      font-size: clamp(22px, 3.2vw, 30px);
+      letter-spacing: .2px;
+    }
+    .subtitle {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: clamp(14px, 2.2vw, 16px);
+    }
+
+    .section {
+      background: #fafbfd;
+      border: 1px solid #eef2f7;
+      border-radius: 12px;
+      padding: clamp(14px, 3vw, 18px);
+    }
+    .section h3 {
+      margin: 0 0 10px;
+      font-size: clamp(16px, 2.4vw, 18px);
+    }
+    .list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: clamp(14px, 2.2vw, 16px);
+    }
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      background: #f1f4fb;
+      border: 1px solid #e3e9f6;
+      border-radius: 6px;
+      padding: 0 6px;
+      font-size: .95em;
+      white-space: nowrap;
+    }
+
+    /* Footer mini (opcional) */
+    .foot {
+      margin-top: 14px;
+      color: #64748b;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    /* Dialogflow Messenger — estilos y tamaños */
+    df-messenger {
+      /* colores */
+      --df-messenger-button-titlebar-color: var(--brand);
+      --df-messenger-font-color: #000;
+      --df-messenger-chat-background-color: #ffffff;
+      --df-messenger-chat-border-radius: 14px;
+
+      /* burbujas (opcional) */
+      --df-messenger-message-user-background-color: #e9edff;
+      --df-messenger-message-bot-background-color: #f6f6f8;
+
+      /* tamaño del panel flotante (desktop/tablet) */
       --df-messenger-chat-width: 420px;
       --df-messenger-chat-height: 70vh;
     }
 
-    /* Móvil */
-    @media (max-width:600px){
-      .hero { margin-top:32px; }
-      .hero h1 { font-size:22px; }
-      .float-wrap df-messenger {
+    /* Responsive: ocupar ancho completo en móvil y ajustar alto */
+    @media (max-width: 600px) {
+      body { padding: 20px 12px 84px; }
+      .card { width: 100%; padding: 16px; }
+      df-messenger {
         --df-messenger-chat-width: 100vw;
         --df-messenger-chat-height: 75vh;
       }
     }
-    /* Tablet */
-    @media (min-width:600px) and (max-width:960px){
-      .float-wrap df-messenger {
+
+    /* Tablet un poco más grande */
+    @media (min-width: 600px) and (max-width: 960px) {
+      df-messenger {
         --df-messenger-chat-width: 480px;
         --df-messenger-chat-height: 80vh;
       }
     }
-    @supports(padding: max(0px)){ body{ padding-bottom: env(safe-area-inset-bottom); } }
+
+    /* Safe areas (iOS) */
+    @supports(padding: max(0px)) {
+      body { padding-bottom: max(80px, env(safe-area-inset-bottom)); }
+    }
   </style>
 </head>
 <body>
-  <section class="hero">
-    <h1>Planificador de Producción</h1>
-    <p>Abrí el chat y seguí los pasos para generar tu plan.</p>
-  </section>
 
-  <!-- Opción A (tarjeta centrada). Oculta por defecto; el script la habilita si hay soporte -->
-  <div class="card-wrap" id="cardWrap">
-    <div class="card">
-      <df-messenger agent-id="084865e4-8977-4a49-9d05-79e832009949" language-code="es">
-        <df-messenger-chat chat-title="Planificador"></df-messenger-chat>
-      </df-messenger>
-    </div>
-  </div>
+  <main class="card" aria-label="Instrucciones de uso">
+    <h1 class="title">🏭 Planificador de Producción — Demo</h1>
+    <p class="subtitle">
+      Este asistente te ayuda a <strong>crear un plan de producción</strong> según la <em>demanda</em>, <em>capacidad</em>,
+      <em>inventarios</em> y <em>materiales</em> (BOM). Abrí el chat (abajo a la derecha) y seguí los pasos.
+    </p>
 
-  <!-- Opción B (flotante mejorado). Visible por defecto; el script la oculta si A está disponible -->
-  <div class="float-wrap" id="floatWrap">
-    <df-messenger
-      agent-id="084865e4-8977-4a49-9d05-79e832009949"
-      language-code="es"
-      chat-title="Planificador"
-      intent="WELCOME">
-    </df-messenger>
-  </div>
+    <section class="section">
+      <h3>📋 Datos que vas a ingresar</h3>
+      <ol class="list">
+        <li><strong>Producto</strong> — ej: “galletas de chocolate”.</li>
+        <li><strong>Unidad de período</strong> — día / semana / mes.</li>
+        <li><strong>Cantidad de períodos</strong>.</li>
+        <li><strong>Demanda por período</strong>.</li>
+        <li><strong>Inventario inicial (PT)</strong>.</li>
+        <li><strong>Capacidad por período</strong>.</li>
+        <li><strong>Tiempo por unidad</strong> (horas/u).</li>
+        <li><strong>Materiales (opcional)</strong> — formato: <span class="kbd">nombre, cantidad_por_unidad, stock</span><br/>
+            Ej: <span class="kbd">harina, 0.25, 200</span>
+        </li>
+      </ol>
+      <p class="subtitle" style="margin-top:10px;">
+        Al terminar escribí <span class="kbd">calcular</span> para ver el plan. Para reiniciar: <span class="kbd">reset</span> 🔄
+      </p>
+    </section>
+
+    <p class="foot">Versión demo para fines académicos. No ingreses información sensible.</p>
+  </main>
+
+  <!-- Widget flotante de Dialogflow Messenger -->
+  <df-messenger
+    agent-id="AGENT_ID_AQUI"
+    language-code="es"
+    chat-title="Planificador"
+    intent="WELCOME">
+  </df-messenger>
 
   <script>
-    // Si el navegador/agente registra <df-messenger-chat>, usamos la tarjeta centrada (A).
-    // Si NO, dejamos el flotante (B).
+    // Intento abrir el chat automáticamente (algunas versiones lo soportan)
     window.addEventListener('DOMContentLoaded', () => {
-      const supportsCard = !!customElements.get('df-messenger-chat');
-      const cardWrap = document.getElementById('cardWrap');
-      const floatWrap = document.getElementById('floatWrap');
-
-      if (supportsCard) {
-        // Mostrar tarjeta centrada, ocultar flotante
-        if (cardWrap) cardWrap.style.display = 'block';
-        if (floatWrap) floatWrap.style.display = 'none';
-      } else {
-        // Mantener flotante y, si se puede, abrirlo
-        const df = floatWrap?.querySelector('df-messenger');
-        if (df && typeof df.open === 'function') { try { df.open(); } catch(e){} }
+      const df = document.querySelector('df-messenger');
+      if (df && typeof df.open === 'function') {
+        try { df.open(); } catch(e) {}
       }
     });
   </script>
 </body>
 </html>
+
 
 
 
